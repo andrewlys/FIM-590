@@ -100,7 +100,7 @@
     \]
     for a portfolio with self-financing condition:
     \[
-    \pi X_t^\pi = X_t^\pi \pi_t \frac{d S_t}{S_t} + r(1 - \pi_t) X_t^\pi dt - c_t dt
+    d X_t^\pi = X_t^\pi \pi_t \frac{d S_t}{S_t} + r(1 - \pi_t) X_t^\pi dt - c_t dt
     \]
     $c_t \ge 0$. 
 
@@ -110,6 +110,108 @@
     \]
     where $\rho > 0$
 \end{theorem}
+\begin{proof}[Solution]
+    The full dynamics for $X_t^\pi$ are: 
+    \begin{align*}
+        d X_t^\pi &= X_t^\pi \pi_t \mu dt + \sigma \pi_t X_t^\pi dW_t + r(1 - \pi_t) X_t^\pi dt - c_t dt\\
+        &= (X_t^\pi (\pi_t \mu + (1 - \pi_t) r) - c_t) dt + \sigma \pi_t X_t^\pi dW_t
+    \end{align*}
+    We have the following hamiltonian: 
+    \[
+    \mathcal{H}(t, x, p, M) = \sup_{\pi, c} \left\{(x(\pi \mu + (1 - \pi)r ) - c)p + \frac{1}{2}\sigma^2 \pi^2 x^2 M + e^{-\rho t} \log{(c)}\right\}
+    \]
+    We can solve this as follows: 
+    \begin{align*}
+        [\pi]&: x(\mu - r) p + \sigma^2 \pi x^2 M = 0\\
+        [c]&: -p + e^{-\rho t}c^{-1} = 0
+    \end{align*}
+    Which gives us the optimal controls: 
+    \[
+    \begin{cases}
+        \pi = -\frac{p (\mu - r)}{\sigma^2 x M}\\
+        c = \frac{e^{-\rho t}}{p}
+    \end{cases}
+    \]
+    and gives us the following Hamiltonian:
+    \[
+    \mathcal{H}(t, x, p, M) = - \frac{p^2(\mu - r)^2}{2\sigma^2 M} - e^{-\rho t} (1 + \rho t + \log{(p)})
+    \]
+    As such, we have the following HJB equation: 
+    \begin{align*}
+        0 &= \partial_t H + \mathcal{H}(t, x, \partial_x H, \partial^2_x H)\\
+        &= \partial_t H - \frac{(\partial_x H)^2}{\partial^2_x H} \frac{(\mu - r)^2}{2\sigma^2} - e^{-\rho t}(1 + \rho t + \log(\partial_x H))
+    \end{align*}
+    or the following PDE:
+    \[
+    \frac{(\partial_x H)^2}{\partial^2_x H} \frac{(\mu - r)^2}{2\sigma^2} + e^{-\rho t}(1 + \rho t + \log(\partial_x H)) = \partial_t H
+    \]
+    We think of this as follows. First, we let $H(t,x) = e^{-\rho t}v(t,x)$. 
+    This gives us the following PDE in $v$: 
+    \[
+    \frac{(\partial_x v)^2}{\partial^2_x v} \frac{(\mu - r)^2}{2\sigma^2} + 1 + \rho v + \log(\partial_x v) = \partial_t v
+    \]
+    since we know that $H(t,x) \to 0$, and conceptualizing $v$ as the undiscounted value, 
+    we guess that $v$ reaches a steady state, so we guess that $\partial_t v = 0$, giving us the following ODE:
+    \[
+    \frac{(v')^2}{v''} \frac{(\mu - r)^2}{2 \sigma^2} + 1 + \rho v + \log(v') = 0
+    \]
+
+    Additionally, we notice that the wealth should be scale invariant, 
+    i.e. the wealth and consumption should be independent of numeraire. 
+    This motivates the guess: 
+    \begin{align*}
+        v(\lambda x) &= \sup_\pi \mathbb{E}\int_0^\infty e^{-\rho t}\log(\lambda c_t) dt \\
+        &= \frac{1}{\rho}\log(\lambda) + v(x)
+    \end{align*}
+    which, differentiating w.r.t. $\lambda$ and setting $\lambda = 1$, gives us: 
+    \begin{align*}
+        x v'(x) &= \frac1{\rho}\\
+        v(x) &= \frac{1}{\rho}\log(x) + C
+    \end{align*}
+    Plugging this into the ODE above gives us: 
+    \begin{align*}
+        -\frac{(1/(\rho x)^2)}{1/(\rho x^2)} \frac{(\mu - r)^2}{2 \sigma^2} + 1 + \rho C - \log(\rho) &= 0\\
+        -\frac{1}{\rho}\frac{(\mu - r)^2}{2 \sigma^2} + 1 + \rho C = \log(\rho) \\
+        C = \frac{1}{\rho} \left(\log(\rho) + \frac{(\mu - r)^2}{2 \rho\sigma^2} - 1\right)
+    \end{align*}
+    We now verify that the candidate $H$ satisfies the HJB equation. We begin with the left hand side:
+    \begin{align*}
+    &\frac{(\partial_x H)^2}{\partial^2_x H} \frac{(\mu - r)^2}{2\sigma^2} + e^{-\rho t}(1 + \rho t + \log(\partial_x H)) \\
+    &= \frac{\left(\frac{e^{-\rho t}}{\rho x}\right)^2}{-\frac{e^{-\rho t}}{\rho x^2}} \frac{(\mu - r)^2}{2\sigma^2} + e^{-\rho t}\left(1 + \rho t + \log\left(\frac{e^{-\rho t}}{\rho x}\right)\right) \\
+    &= \left(-\frac{e^{-\rho t}}{\rho}\right) \frac{(\mu - r)^2}{2\sigma^2} + e^{-\rho t}(1 + \rho t - \rho t - \log(\rho) - \log(x)) \\
+    &= e^{-\rho t} \left( -\frac{(\mu - r)^2}{2\rho\sigma^2} + 1 - \log(\rho) - \log(x) \right) \\
+    &= -e^{-\rho t} \left[ \log(x) + \log(\rho) + \frac{(\mu - r)^2}{2\rho\sigma^2} - 1 \right] \\
+    \end{align*}
+    Now the right hand side:
+    \begin{align*}
+    \partial_t H 
+    &= \frac{\partial}{\partial t} \left( \frac{e^{-\rho t}}{\rho} \left[ \log(x) + \log(\rho) + \frac{(\mu - r)^2}{2\rho\sigma^2} - 1 \right] \right) \\
+    &= -e^{-\rho t} \left[ \log(x) + \log(\rho) + \frac{(\mu - r)^2}{2\rho\sigma^2} - 1 \right] 
+    \end{align*}
+    Additionally, we see that $H(t,x) \to 0$ as $t \to \infty$, so indeed our $H$ is the solution to the HJB equation.
+    To summarize, we have that our value function is: 
+    \[
+    H(t, x) = \frac{e^{-\rho t}}{\rho} \log(x) + \frac{e^{-\rho t}}{\rho} \left(\log(\rho) + \frac{(\mu - r)^2}{2 \rho\sigma^2} - 1\right)
+    \]
+    Now, we derive the optimal controls. We have that
+    \begin{align*}
+    \pi_t^\ast &= -\frac{\partial_x H (\mu - r)}{\sigma^2 x \partial_x^2 H} \\
+    &= -\frac{\left(\frac{e^{-\rho t}}{\rho x}\right) (\mu - r)}{\sigma^2 x \left(-\frac{e^{-\rho t}}{\rho x^2}\right)} \\
+    &= \frac{\mu - r}{\sigma^2} \\
+    c_t^\ast &= \frac{e^{-\rho t}}{\partial_x H} \\
+    &= \frac{e^{-\rho t}}{\frac{e^{-\rho t}}{\rho x}} \\
+    &= \rho x
+    \end{align*}
+    To summarize, we have the following value function and optimal controls:
+    \[
+    \begin{cases}
+    H(t, x) = \frac{e^{-\rho t}}{\rho} \log(x) + \frac{e^{-\rho t}}{\rho} \left(\log(\rho) + \frac{(\mu - r)^2}{2 \rho\sigma^2} - 1\right)\\
+    \pi_t^\ast = \frac{\mu - r}{\sigma^2} \\
+    c_t^\ast = \rho X_t^{\pi^\ast}
+    \end{cases}
+    \]
+
+\end{proof}
 \begin{theorem}
     Prove that Brownian motion has infinite total variation almost surely.
 \end{theorem}
