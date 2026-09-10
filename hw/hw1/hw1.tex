@@ -134,26 +134,27 @@
     \]
     and gives us the following Hamiltonian:
     \[
-    \mathcal{H}(t, x, p, M) = - \frac{p^2(\mu - r)^2}{2\sigma^2 M} - e^{-\rho t} (1 + \rho t + \log{(p)})
+    \mathcal{H}(t, x, p, M) = xrp - \frac{p^2(\mu - r)^2}{2\sigma^2 M} - e^{-\rho t} (1 + \rho t + \log{(p)})
     \]
     As such, we have the following HJB equation: 
     \begin{align*}
         0 &= \partial_t H + \mathcal{H}(t, x, \partial_x H, \partial^2_x H)\\
-        &= \partial_t H - \frac{(\partial_x H)^2}{\partial^2_x H} \frac{(\mu - r)^2}{2\sigma^2} - e^{-\rho t}(1 + \rho t + \log(\partial_x H))
+        &= \partial_t H + xr \partial_x H - \frac{(\partial_x H)^2}{\partial^2_x H} \frac{(\mu - r)^2}{2\sigma^2} - e^{-\rho t}(1 + \rho t + \log(\partial_x H))
     \end{align*}
     or the following PDE:
     \[
-    \frac{(\partial_x H)^2}{\partial^2_x H} \frac{(\mu - r)^2}{2\sigma^2} + e^{-\rho t}(1 + \rho t + \log(\partial_x H)) = \partial_t H
+    \frac{(\partial_x H)^2}{\partial^2_x H} \frac{(\mu - r)^2}{2\sigma^2} + e^{-\rho t}(1 + \rho t + \log(\partial_x H)) = \partial_t H + xr \partial_x H
     \]
-    We think of this as follows. First, we let $H(t,x) = e^{-\rho t}v(t,x)$. 
+    We think of this as follows. First, we guess that the value function is of the form $H(t,x) = e^{-\rho t}v(t,x)$,
+    i.e. we guess that the value function is a discounted value function.
     This gives us the following PDE in $v$: 
     \[
-    \frac{(\partial_x v)^2}{\partial^2_x v} \frac{(\mu - r)^2}{2\sigma^2} + 1 + \rho v + \log(\partial_x v) = \partial_t v
+    \frac{(\partial_x v)^2}{\partial^2_x v} \frac{(\mu - r)^2}{2\sigma^2} + 1 + \rho v + \log(\partial_x v) = \partial_t v + xr \partial_x v
     \]
     since we know that $H(t,x) \to 0$, and conceptualizing $v$ as the undiscounted value, 
     we guess that $v$ reaches a steady state, so we guess that $\partial_t v = 0$, giving us the following ODE:
     \[
-    \frac{(v')^2}{v''} \frac{(\mu - r)^2}{2 \sigma^2} + 1 + \rho v + \log(v') = 0
+    \frac{(v')^2}{v''} \frac{(\mu - r)^2}{2 \sigma^2} + 1 + \rho v + \log(v') = xr v'
     \]
 
     Additionally, we notice that the wealth should be scale invariant, 
@@ -170,9 +171,9 @@
     \end{align*}
     Plugging this into the ODE above gives us: 
     \begin{align*}
-        -\frac{(1/(\rho x)^2)}{1/(\rho x^2)} \frac{(\mu - r)^2}{2 \sigma^2} + 1 + \rho C - \log(\rho) &= 0\\
-        -\frac{1}{\rho}\frac{(\mu - r)^2}{2 \sigma^2} + 1 + \rho C = \log(\rho) \\
-        C = \frac{1}{\rho} \left(\log(\rho) + \frac{(\mu - r)^2}{2 \rho\sigma^2} - 1\right)
+        -\frac{(1/(\rho x)^2)}{1/(\rho x^2)} \frac{(\mu - r)^2}{2 \sigma^2} + 1 + \rho C - \log(\rho) &= \frac{r}{\rho}\\
+        -\frac{1}{\rho}\frac{(\mu - r)^2}{2 \sigma^2} + 1 + \rho C = \log(\rho) + \frac{r}{\rho}\\
+        C = \frac{1}{\rho} \left(\log(\rho) + \frac{r}{\rho} + \frac{(\mu - r)^2}{2 \rho\sigma^2} - 1\right)
     \end{align*}
     We now verify that the candidate $H$ satisfies the HJB equation. We begin with the left hand side:
     \begin{align*}
@@ -180,37 +181,37 @@
     &= \frac{\left(\frac{e^{-\rho t}}{\rho x}\right)^2}{-\frac{e^{-\rho t}}{\rho x^2}} \frac{(\mu - r)^2}{2\sigma^2} + e^{-\rho t}\left(1 + \rho t + \log\left(\frac{e^{-\rho t}}{\rho x}\right)\right) \\
     &= \left(-\frac{e^{-\rho t}}{\rho}\right) \frac{(\mu - r)^2}{2\sigma^2} + e^{-\rho t}(1 + \rho t - \rho t - \log(\rho) - \log(x)) \\
     &= e^{-\rho t} \left( -\frac{(\mu - r)^2}{2\rho\sigma^2} + 1 - \log(\rho) - \log(x) \right) \\
-    &= -e^{-\rho t} \left[ \log(x) + \log(\rho) + \frac{(\mu - r)^2}{2\rho\sigma^2} - 1 \right] \\
+    &= -e^{-\rho t} \left[ \log(x) + \log(\rho) + \frac{(\mu - r)^2}{2\rho\sigma^2} - 1 \right] 
     \end{align*}
-    Now the right hand side:
+    Now for the right hand side
     \begin{align*}
-    \partial_t H 
-    &= \frac{\partial}{\partial t} \left( \frac{e^{-\rho t}}{\rho} \left[ \log(x) + \log(\rho) + \frac{(\mu - r)^2}{2\rho\sigma^2} - 1 \right] \right) \\
+    \partial_t H + x r \partial_x H 
+    &= \frac{\partial}{\partial t} \left( \frac{e^{-\rho t}}{\rho} \left[ \log(x) + \log(\rho) + \frac{(\mu - r)^2}{2\rho\sigma^2} + \frac{r}{\rho} - 1 \right] \right) + x r \left( \frac{e^{-\rho t}}{\rho x} \right) \\
+    &= -e^{-\rho t} \left[ \log(x) + \log(\rho) + \frac{(\mu - r)^2}{2\rho\sigma^2} + \frac{r}{\rho} - 1 \right] + e^{-\rho t} \frac{r}{\rho} \\
+    &= -e^{-\rho t} \left[ \log(x) + \log(\rho) + \frac{(\mu - r)^2}{2\rho\sigma^2} + \frac{r}{\rho} - \frac{r}{\rho} - 1 \right] \\
     &= -e^{-\rho t} \left[ \log(x) + \log(\rho) + \frac{(\mu - r)^2}{2\rho\sigma^2} - 1 \right] 
     \end{align*}
     Additionally, we see that $H(t,x) \to 0$ as $t \to \infty$, so indeed our $H$ is the solution to the HJB equation.
     To summarize, we have that our value function is: 
     \[
-    H(t, x) = \frac{e^{-\rho t}}{\rho} \log(x) + \frac{e^{-\rho t}}{\rho} \left(\log(\rho) + \frac{(\mu - r)^2}{2 \rho\sigma^2} - 1\right)
+    H(t, x) = \frac{e^{-\rho t}}{\rho} \log(x) + \frac{e^{-\rho t}}{\rho} \left(\log(\rho) + \frac{r}{\rho} + \frac{(\mu - r)^2}{2 \rho\sigma^2} - 1\right)
     \]
     Now, we derive the optimal controls. We have that
     \begin{align*}
     \pi_t^\ast &= -\frac{\partial_x H (\mu - r)}{\sigma^2 x \partial_x^2 H} \\
     &= -\frac{\left(\frac{e^{-\rho t}}{\rho x}\right) (\mu - r)}{\sigma^2 x \left(-\frac{e^{-\rho t}}{\rho x^2}\right)} \\
     &= \frac{\mu - r}{\sigma^2} \\
-    c_t^\ast &= \frac{e^{-\rho t}}{\partial_x H} \\
-    &= \frac{e^{-\rho t}}{\frac{e^{-\rho t}}{\rho x}} \\
+    c_t^\ast &= \frac{e^{-\rho t}}{\partial_x H} = \frac{e^{-\rho t}}{\frac{e^{-\rho t}}{\rho x}} \\
     &= \rho x
     \end{align*}
     To summarize, we have the following value function and optimal controls:
     \[
     \begin{cases}
-    H(t, x) = \frac{e^{-\rho t}}{\rho} \log(x) + \frac{e^{-\rho t}}{\rho} \left(\log(\rho) + \frac{(\mu - r)^2}{2 \rho\sigma^2} - 1\right)\\
+    H(t, x) = \frac{e^{-\rho t}}{\rho} \log(x) + \frac{e^{-\rho t}}{\rho} \left(\log(\rho) + \frac{r}{\rho} + \frac{(\mu - r)^2}{2 \rho\sigma^2} - 1\right)\\
     \pi_t^\ast = \frac{\mu - r}{\sigma^2} \\
     c_t^\ast = \rho X_t^{\pi^\ast}
     \end{cases}
     \]
-
 \end{proof}
 \begin{theorem}
     Prove that Brownian motion has infinite total variation almost surely.
