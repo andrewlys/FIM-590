@@ -1,0 +1,46 @@
+# VS Code history
+.history/
+**/.history/
+
+# Python Cache and virtual environments
+*.venv/
+
+# LaTeX build directories
+*_build/
+build/
+**/build/
+
+# LaTeX auxiliary files
+*.aux
+*.log
+*.out
+*.toc
+*.lof
+*.lot
+*.fls
+*.fdb_latexmk
+*.synctex
+*.synctex.gz
+*.pdfsync
+
+# Bibliography and index files
+*.bbl
+*.bcf
+*.blg
+*.run.xml
+*.idx
+*.ilg
+*.ind
+
+# Other LaTeX generated files
+*.acn
+*.acr
+*.alg
+*.glg
+*.glo
+*.gls
+*.ist
+*.nav
+*.snm
+*.vrb
+*.xdv
