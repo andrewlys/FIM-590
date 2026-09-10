@@ -23,6 +23,76 @@
     H(t,x) = a(t) x^2 + b(t)
     \]
 \end{theorem}
+\begin{proof}[Solution]
+   We have 
+   \[
+   H(t, x) = \sup_\pi \mathbb{E}^x \left[
+   -\frac{\gamma}{2} \int_t^T \pi_s^2 - X_T^2
+   \right]
+   \] 
+   We have that the infinitesimal generator of $X$ is 
+   \[
+   \mathcal{L}^\pi = \frac{1}{2}\sigma^2 \partial^2_x -\pi_t \partial_x
+   \]
+   Then we have: 
+   \[
+   \begin{cases}
+    \frac{\partial H}{\partial t} + \sup_{\pi} \left(
+        \mathcal{L}^\pi H - \frac{\gamma}{2} \pi_t^2  
+    \right) = 0\\
+    H(T, x) = -x^2
+   \end{cases}
+   \]
+   \begin{align*}
+    \frac{\partial H}{\partial t} + \sup_{\pi} \left(
+        \frac12 \sigma^2 \partial^2_x H - \pi_t \partial_x H - \frac{\gamma}{2} \pi_t^2  
+    \right) = 0
+   \end{align*}
+   The supremum is attained at 
+   \[
+   \pi_t = -\frac{1}{\gamma} \partial_x H
+   \]
+   so we have
+   \begin{align*}
+    \frac{\partial H}{\partial t} + \frac{1}{2}\sigma^2 \partial^2_x H + \frac{1}{\gamma} (\partial_x H)^2 - \frac{1}{2\gamma} (\partial_x H)^2 = 0\\
+    \frac{\partial H}{\partial t} + \frac{1}{2}\sigma^2 \partial^2_x H + \frac{1}{2\gamma} (\partial_x H)^2 = 0
+   \end{align*}
+   Plugging in the ansatz, we have: 
+   \begin{align*}
+   a'(t) x^2 + b'(t) + \sigma^2 a(t) + \frac{2}{\gamma}a(t)^2 x^2 = 0
+   \end{align*}
+   which gives us the following ODEs: 
+   \[
+   \begin{cases}
+    a'(t) + \frac{2}{\gamma} a(t)^2 = 0\\
+    b'(t) + \sigma^2 a(t) = 0\\
+    a(T) = -1, b(T) = 0
+   \end{cases}
+   \]
+   We can solve the first ODE to get: 
+   \[
+   a(t) = - \frac{\gamma}{2(T - t) + \gamma}
+   \]
+   and then solve the second ODE to get: 
+   \[
+   b(t) = -\frac{\sigma^2 \gamma}{2} \log{\left(
+    \frac{2(T - t)}{\gamma} + 1
+   \right)}
+   \]
+   and we have that the optimal control is: 
+   \[
+   \pi_t = \frac{1}{T - t + \gamma / 2} X_t
+   \]
+   to summarize: 
+   \[
+   \begin{cases}
+    H(t, x) = - \frac{\gamma}{2(T - t) + \gamma} x^2 -\frac{\sigma^2 \gamma}{2} \log{\left(
+    \frac{2(T - t)}{\gamma} + 1
+   \right)}\\
+   \pi_t = \frac{1}{T - t + \gamma / 2} X_t
+   \end{cases}
+   \]
+\end{proof}
 \begin{theorem}
     Consider a risky asset price:
     \[
@@ -43,7 +113,7 @@
 \begin{theorem}
     Prove that Brownian motion has infinite total variation almost surely.
 \end{theorem}
-\begin{proof}
+\begin{proof}[Solution]
     We prove a stronger statement: 
     Let $M$ be a continuous local martingale. 
     If $M$ is almost surely non-constant, then $M$ has infinite total variation almost surely.
