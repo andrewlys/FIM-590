@@ -1,0 +1,298 @@
+\documentclass{amsart}
+\usepackage{amsmath, amsthm, amssymb}
+\newtheorem{theorem}{Question}[section]
+\renewcommand{\thetheorem}{\thesection \alph{theorem}}
+\newcommand{\EE}{\mathbb{E}}
+\title{FIM 590 - Homework 2}
+\author{Andrew Lys}
+\begin{document}
+\maketitle
+\section{Problem 1}
+An agent liquidates $\mathfrak{N}$ shares between $t$ and $T$ using market orders.
+The value function is
+\[
+H(t, s, q) = \sup_{\nu \in \mathcal{A}_{t, T}} \EE^{t, s, q} \left[
+    \int_t^T (S_u - k \nu_u)\nu_u du + Q_T^\nu (S_T - \alpha Q_T^\nu)
+\right]
+\]
+Where $k>0$ is the temporary market impact, $\nu_t$ is the speed of trading, $\alpha \ge 0$ is the liquidation penalty, and $dS_t = \sigma dW_t$. 
+\begin{theorem}
+    Show that the value function $H$ satisfies
+    \[
+    0 = - \left(
+        H_q - S
+    \right)^2 - 4k H_t - 2k\sigma^2 H_{ss}
+    \]
+\end{theorem}
+\begin{proof}[Solution.]
+    We have the following HJB equation: 
+    \[
+    H_t + \frac12 \sigma^2 H_{ss} + \max_\nu\{- \nu H_q  + (S - k\nu)\nu\} = 0
+    \]
+    Solving for $\nu^\ast$, we have 
+    \[
+    \nu^\ast = \frac{S - H_q}{2k}
+    \]
+    Which gives us the following PDE: 
+    \begin{align*}
+    4kH_t + 2k\sigma^2 H_{ss} + (S - H_q)^2 = 0
+    \end{align*}
+\end{proof}
+\begin{theorem}
+    Make the ansatz
+    \[
+    H(t, s, q) = h_2(t) q^2 + h_q(t)q + h_0(t) + qs
+    \]
+    and show that the optimal liquidation rate is 
+    \[
+    \nu_t^\ast = \frac{Q_t^{\nu^\ast
+    }}{T - t + \frac{k}{\alpha}}
+    \]
+\end{theorem}
+\begin{proof}
+    First, we compute partial derivatives
+    \begin{align*}
+        H_t &= \dot{h}_2 q^2 + \dot{h}_q q + \dot{h}_0 \\
+        H_{ss} &= 0 \\
+        H_q &= 2 h_2 q + h_q + s
+    \end{align*}
+    Which after we plug into the PDE gives us
+    \begin{align*}
+    0 = 4k\dot{h}_2 q^2 + 4k \dot{h}_qq + 4k \dot{h}_0 + (2 h_2 q + h_q)^2 \\
+    4k\dot{h}_2 q^2 + 4k \dot{h}_qq + 4k \dot{h}_0 + 4 h_2^2 q^2 + 4h_2 h_q q + h_q^2 
+    \end{align*}
+    We now match coefficients of powers of $q$. 
+    \begin{align*}
+        4k \dot{h}_2 + 4 h_2^2 &= 0 \\
+        4k \dot{h}_q + 4h_2 h_q &= 0 \\
+        4k \dot{h}_0 + h_q^2 &= 0
+    \end{align*}
+    Doing the same for the terminal condition $H(T, s, q) = qs - \alpha q^2$, we have: 
+    \begin{align*}
+        h_0(T) &= 0 \\
+        h_2(T) &= -\alpha \\
+        h_q(T) &= 0
+    \end{align*}
+    For $h_2$, we have: 
+    \begin{align*}
+        \frac{dh_2}{h_2^2} &= d \left(\frac{-1}{h_2}\right) = -\frac1{k}dt\\ 
+        \frac{1}{h_2(t)} + \frac1{\alpha} &= - \frac{T - t}{k}\\
+        h_2(t) &= \frac{-k}{T - t + \frac{k}{\alpha}}
+    \end{align*}
+    For $h_q$, we notice that due to the terminal condition $h_q \equiv 0$, and similarly for $h_0$. 
+    Thus, we have 
+    \[
+    H = \frac{-kq^2}{T - t + \frac{k}{\alpha}} + qs
+    \] 
+    Which gives us: 
+    \[
+    \nu_t^\ast = \frac{1}{2k} \frac{2kq}{T - t + \frac{k}{\alpha}} = \frac{q}{T - t + \frac{k}{\alpha}}
+    \]
+\end{proof}
+\begin{theorem}
+   Let $\alpha \to \infty$ and show that this converges to TWAP. Moreover, discuss the intuition of the strategy when $\alpha \to 0$.  
+\end{theorem}
+\begin{proof}
+    When $\alpha \to \infty$, we have 
+    \[
+    \nu_t^\ast = \frac{Q_t^{\nu^\ast}}{T - t}
+    \]
+    Neglecting superscripts, we then have 
+    \[
+    \dot{q} = - \nu
+    \]
+    Which gives us 
+    \[
+    -\dot{q} = q \frac{1}{T - t}
+    \]
+    Consequently, we have 
+    \begin{align*}
+        \log \frac{q(t)}{q(0)} &= \log \frac{T - t}{T} \\
+        q(t) &= q(0) \frac{T - t}{T}  = \mathfrak{N} \left(1 - \frac{t}{T}\right)
+    \end{align*}
+    Which exactly recovers TWAP.
+
+    As $\alpha \to 0$, $\frac{k}{\alpha} \to \infty$, and thus the liquidation rate goes to $0$. 
+    Intuitively, the terminal reward $Q^\nu_T(S_T - \alpha Q_T^\nu)$ is a stand-in for the mark to market value of the inventory at the terminal time, 
+    and additionally the agent's desire to liquidate all of their inventory. 
+    If $\alpha \to 0$, this means that at the terminal time, either the agent is able to liquidate their inventory without penalty.
+    Assuming a risk-neutral agent, this essentially means that they have no urgency to liquidate their inventory, 
+    and are willing to wait as long as possible to execute at the mid price. 
+\end{proof}
+\section{Question 2}
+The agent wishes to liquidate $\mathfrak{N}$ shares and her objective is to maximize expected terminal wealth denoted by $X_T^{\nu}$. 
+The value function is 
+\[
+H(t, x, s, q) = \sup_\nu \EE^{t, x, s, q} [X_T^\nu + Q_T^\nu(S_T - \alpha Q_T^\nu)]
+\]
+where 
+\[
+d X_t^\nu = (S_t - k \nu_t)\nu_t dt
+\]
+\begin{theorem}
+    Derive the HJB and the optimal liquidation rate in feedback form.
+\end{theorem}
+\begin{proof}
+    The HJB equation is as follows: 
+    \[
+    \max_{\nu} H_t + (s - k\nu) \nu H_x + \frac{1}{2} \sigma^2 H_{ss} - \nu H_q = 0 
+    \]
+    Which is precisely the same form as 
+    \[
+    \left(\partial_t + \frac12 \sigma^2 \partial_{ss}\right) H + \max_\nu \left\{
+    \left(-\nu \partial_q + (s - k \nu)\nu \partial_x\right) H
+    \right\} = 0
+    \]
+    Taking the FOC w.r.t. $\nu$, we get 
+    \begin{align*}
+        -H_q + sH_x - 2k \nu H_x = 0\\
+        \nu = \frac{s H_x - H_q}{2k H_x}
+    \end{align*}
+\end{proof}
+\begin{theorem}
+    Use the terminal condition to propose the ansatz 
+    \[
+    H = x + h(t) q^2 + qs
+    \]
+    to derive the value function and the optimal control. 
+\end{theorem}
+\begin{proof}
+    Let's begin by taking some derivatives: 
+    \begin{align*}
+        H_t &= \dot{h} q^2 \\
+        H_{ss} &= 0 \\
+        H_q &= 2 h q + s \\
+        H_x &= 1
+    \end{align*}
+    This gives us the optimal liquidation rate as 
+    \[
+    \nu = -\frac{hq}{k}
+    \]
+    Plugging this all back into the HJB equation, we get the following PDE:
+    \begin{align*}
+        \dot{h} + \frac{h^2}{k} = 0
+    \end{align*}
+    Combined with the terminal condition $h(T) = -\alpha$, we get 
+    \[
+    h(t) = \frac{-k}{T - t + \frac{k}{\alpha}}
+    \]
+    Plugging this back into the control, we get the optimal liquidation rate as 
+    \[
+    \nu = \frac{q}{T - t + \frac{k}{\alpha}}
+    \]
+\end{proof}
+\section{Question 3}
+An agent liquidates $\mathfrak{N}$ shares over $[0, T]$ subject to temporary price impact parameter $k > 0$
+and running inventory risk penalty parameter $\phi > 0$.
+The value function is 
+\[
+H(t, s, q) = \sup_{\nu \in \mathcal{A}}\EE^{t,s,q} \left[
+    \int_t^T ((S_u - k \nu_u) \nu_u - \phi Q_u^2) du
+\right]
+\]
+subject to 
+\[
+dQ_t = -\nu_t dt, \qquad dS_t = \sigma d W_t
+\]
+and hard terminal constraint $Q_T = 0$. 
+\begin{theorem}
+    Make the additive ansatz $H(t, s, q) = qs + h(t,q)$ with quadratic penalty $h(t,q) = -h_2(t)q^2$. 
+    Show that $h_2(t)$ satisfies the ODE
+    \[
+    \dot{h}_2(t) - \frac1{k} h_2^2(t) + \phi = 0
+    \]
+\end{theorem}
+\begin{proof}
+    We have the following HJB
+    \[
+    H_t + \frac{1}{2}\sigma^2 H_{ss} - \nu H_q + (s - k\nu)\nu - \phi q^2 \le 0
+    \]
+    Plugging in the ansatz, we have: 
+    \[
+    -\dot{h}_2q^2 + 2\nu h_2 q  - k \nu^2 - \phi q^2 \le 0
+    \]
+    We have the FOC
+    \begin{align*}
+        -2k \nu + 2h_2q = 0 \\
+        \nu = \frac{h_2 q}{k}
+    \end{align*}
+    Which gives us 
+    \begin{align*}
+    -\dot{h}_2 q^2 + \frac{1}{k}h_2^2 q^2  - \phi q^2 = 0\\
+    \dot{h}_2 - \frac{1}{k}h_2^2 + \phi = 0
+    \end{align*}
+\end{proof}
+\begin{theorem}
+    Enforce the terminal condition to derive $h_2$
+\end{theorem}
+\begin{proof}
+    We solve the ODE first.
+    \begin{align*}
+        \frac{dh_2}{dt} &= \frac{h_2^2 - \phi k}{k} \\
+        \frac{dh_2}{h_2^2 - \phi k} &= \frac{dt}{k} \\
+        \frac{1}{h_2^2 - \phi k} &= \frac1{(h_2 + \sqrt{\phi k})(h_2 - \sqrt{\phi k})} \\
+        &= \frac{-1}{2\sqrt{\phi k} h_2 + 2\phi k}  + \frac{1}{2\sqrt{\phi k} h_2 - 2 \phi k} \\
+        \int \frac{d h_2}{h_2^2 - \phi k} &= \frac{1}{2\sqrt{\phi k}} \log\frac{h_2 - \sqrt{\phi k}}{h_2 + \sqrt{\phi k}} + C 
+    \end{align*}
+    Which gives us 
+    \begin{align*}
+        \frac{1}{2\sqrt{\phi k}} \log\frac{h_2 - \sqrt{\phi k}}{h_2 + \sqrt{\phi k}} &= \frac{t}{k} + C\\
+        \frac{h_2 - \sqrt{\phi k}}{h_2 + \sqrt{\phi k}} &= C\exp\left(
+            2t\frac{\sqrt{\phi}}{\sqrt{k}}
+        \right)
+    \end{align*}
+    The terminal condition gives us that the LHS is 1 at $t = T$, which gives us: 
+    \begin{align*}
+        C = \exp\left(
+            -2T\frac{\sqrt{\phi}}{\sqrt{k}}
+        \right)
+    \end{align*}
+    so we have 
+    \begin{align*}
+        \frac{h_2 - \sqrt{\phi k}}{h_2 + \sqrt{\phi k}} &= \exp\left(
+            -2\frac{\sqrt{\phi}}{\sqrt{k}}(T - t)
+        \right)\\
+        h_2(t) &= \sqrt{\phi k} \frac{1 + e^{-2 \sqrt{\phi / k}(T - t)}}{1 - e^{-2 \sqrt{\phi / k}(T - t)}}\\
+        h_2(t) &= \sqrt{\phi k} \frac{e^{\sqrt{\phi / k} (T - t)} + e^{-\sqrt{\phi / k} (T - t)}}{e^{\sqrt{\phi / k} (T - t)} - e^{-\sqrt{\phi / k} (T - t)}}\\
+        h_2(t) &= \sqrt{\phi k} \coth\left(
+            \sqrt{\frac{\phi}{k}} (T - t)
+        \right)
+    \end{align*}
+\end{proof}
+\begin{theorem}
+    Derive the optimal trajectory, and verify that as $\phi \to 0$, $Q_t^\ast$ converges to standard TWAP
+\end{theorem}
+\begin{proof}
+    Let $\gamma = \sqrt{\frac{\phi}{k}}$.
+    We have 
+    \[
+    \nu = \frac{q}{k}\sqrt{\phi k} \coth(\gamma (T - t))
+    \]
+    We also have $\dot{q} = - \nu$, which gives us: 
+    \[
+    \frac{\dot{q}}{q} = - \gamma \coth(\gamma (T - t)) 
+    \]
+    and integrating both sides, we get 
+    \[
+    \log(q) = \log(\sinh(\gamma(T - t))) + C
+    \]
+    Which gives us 
+    \[
+    q = C \sinh(\gamma(T - t))
+    \]
+    Using the initial condition $q(0) = \mathfrak{N}$, we get 
+    \[
+    C = \frac{\mathfrak{N}}{\sinh(\gamma T)}
+    \]
+    So that 
+    \[
+    Q_t^{\nu^\ast} = \mathfrak{N} \frac{\sinh(\gamma(T - t))}{\sinh(\gamma T)}
+    \]
+    As $\phi \to 0$, we have that $\gamma \to 0$. We have 
+    \begin{align*}
+    Q_t^{\nu^\ast} &= \mathfrak{N} \frac{\gamma(T - t) + O(\gamma^3)}{\gamma T + O(\gamma ^3)} \\
+    &= \mathfrak{N}\frac{T - t + O(\gamma^2)}{T + O(\gamma^2)} \to \mathfrak{N}\frac{T - t}{T}
+    \end{align*}
+    Which is precisely TWAP.
+\end{proof}
+\end{document}
